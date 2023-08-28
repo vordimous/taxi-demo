@@ -642,6 +642,7 @@ export default {
                 context.showSuccess(context.$t('placesAndDirections.routeReady'), {timeout: 3})
                 EventBus.$emit('mapViewDataChanged', mapViewData)
                 context.setSidebarIsOpen()
+                this.$root.appHooks.run('afterBuildDirectionsMapViewData', mapViewData)
                 resolve(mapViewData)
               })
             }
