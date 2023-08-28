@@ -27,6 +27,30 @@ class VehicleLocationPlugin {
    */
   constructor (vueInstance) {
     this.vueInstance = vueInstance
+    this.timer = null
+    this.localMapViewData = null
+  }
+
+  appLoaded(vueInstance) {
+    console.log('VehicleLocationPlugin: appLoaded callback', vueInstance)
+
+    this.timer = setInterval(async () => {
+      var res = await fetch('http://localhost:7114/taxi/locations')
+      var locations = await res.json()
+      // console.log('afterBuildDirectionsMapViewData get', locations)
+      var mapData = this.localMapViewData
+      if (mapData) {
+        mapData.pois = []
+        locations.forEach((loc) => {
+          if (loc.length == 3) {
+            mapData.pois.push(new Place(loc[0], loc[1], loc[2]))
+          }
+        })
+        EventBus.$emit('mapViewDataChanged', mapData)
+      }
+    }, 1000)
+
+    // setTimeout(() => clearInterval(this.timer), 30000)
   }
 
   /**
@@ -55,6 +79,7 @@ class VehicleLocationPlugin {
     console.log('VehicleLocationPlugin: mapViewDataChanged callback', mapViewData)
     // change the mapViewData object
     // so that it will update the map view
+    this.localMapViewData = mapViewData
     if (mapViewData.places && mapViewData.places.length == 2 && mapViewData.places[0].coordinates == null) {
       console.log('VehicleLocationPlugin: mapViewDataChanged place', mapViewData)
       EventBus.$emit('setInputPlace', {
@@ -70,14 +95,21 @@ class VehicleLocationPlugin {
 
   async afterBuildDirectionsMapViewData (mapViewData) {
     console.log('VehicleLocationPlugin: afterBuildDirectionsMapViewData callback', mapViewData)
-    await delay(2000)
     if (mapViewData.routes.length) {
       var coords = mapViewData.routes[0].geometry.coordinates
+      var key = mapViewData.routes[0].timestamp
       for (let i = 0; i < coords.length; i++) {
         var c = coords[i]
-        mapViewData.pois= [new Place(c[0], c[1], c[2])]
-        await delay(650)
-        EventBus.$emit('mapViewDataChanged', mapViewData)
+        // console.log('afterBuildDirectionsMapViewData push', c)
+        await fetch('http://localhost:7114/taxi/locations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': `${key}`,
+          },
+          body: JSON.stringify(c),
+        })
+        await delay(Math.floor(Math.random() * (2000 - 500) + 500))
       }
     }
   }
