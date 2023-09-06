@@ -96,21 +96,22 @@ class VehicleLocationPlugin {
   async afterBuildDirectionsMapViewData (mapViewData) {
     console.log('VehicleLocationPlugin: afterBuildDirectionsMapViewData callback', mapViewData)
     if (mapViewData.routes.length) {
-      var coords = mapViewData.routes[0].geometry.coordinates
-      var key = mapViewData.routes[0].timestamp
-      for (let i = 0; i < coords.length; i++) {
-        var c = coords[i]
-        // console.log('afterBuildDirectionsMapViewData push', c)
-        await fetch('http://localhost:7114/taxi/locations', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Idempotency-Key': `${key}`,
-          },
-          body: JSON.stringify(c),
-        })
-        await delay(Math.floor(Math.random() * (2000 - 500) + 500))
+      var route = mapViewData.routes[0]
+      var taxiRoute = {
+        timestamp: mapViewData.timestamp,
+        bbox: route.bbox,
+        distance: route.summary.distance,
+        duration: route.summary.duration,
+        coordinates: route.geometry.coordinates,
       }
+      await fetch('http://localhost:8081/taxiroute.TaxiRoute/CreateTaxi', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': `${taxiRoute.timestamp}`,
+        },
+        body: JSON.stringify(taxiRoute),
+      })
     }
   }
 
