@@ -12,6 +12,7 @@
  */
 import {EventBus} from '@/common/event-bus'
 import Place from '@/models/place'
+import MapViewData from '@/models/map-view-data'
 
 function delay(milliseconds){
   return new Promise(resolve => {
@@ -28,7 +29,7 @@ class VehicleLocationPlugin {
   constructor (vueInstance) {
     this.vueInstance = vueInstance
     this.timer = null
-    this.localMapViewData = null
+    this.localMapViewData = new MapViewData()
   }
 
   appLoaded(vueInstance) {
@@ -41,9 +42,9 @@ class VehicleLocationPlugin {
       var mapData = this.localMapViewData
       if (mapData) {
         mapData.pois = []
-        locations.forEach((loc) => {
-          if (loc.length == 3) {
-            mapData.pois.push(new Place(loc[0], loc[1], loc[2]))
+        locations.forEach(({coordinate}) => {
+          if (coordinate.length == 3) {
+            mapData.pois.push(new Place(coordinate[0], coordinate[1], coordinate[2]))
           }
         })
         EventBus.$emit('mapViewDataChanged', mapData)
