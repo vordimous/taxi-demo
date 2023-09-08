@@ -14,12 +14,6 @@ import {EventBus} from '@/common/event-bus'
 import Place from '@/models/place'
 import MapViewData from '@/models/map-view-data'
 
-function delay(milliseconds){
-  return new Promise(resolve => {
-    setTimeout(resolve, milliseconds)
-  })
-}
-
 class VehicleLocationPlugin {
   /**
    * PluginExample constructor.
@@ -30,26 +24,35 @@ class VehicleLocationPlugin {
     this.vueInstance = vueInstance
     this.timer = null
     this.localMapViewData = new MapViewData()
+    this.routeKeyPath = ''
   }
 
   appLoaded(vueInstance) {
     console.log('VehicleLocationPlugin: appLoaded callback', vueInstance)
 
     this.timer = setInterval(async () => {
-      var res = await fetch('http://localhost:7114/taxi/locations')
-      var locations = await res.json()
-      // console.log('afterBuildDirectionsMapViewData get', locations)
-      var mapData = this.localMapViewData
-      if (mapData) {
-        mapData.pois = []
-        locations.forEach(({coordinate}) => {
-          if (coordinate.length == 3) {
-            mapData.pois.push(new Place(coordinate[0], coordinate[1], coordinate[2]))
+      var res = await fetch(`http://localhost:7114/taxi/locations${this.routeKeyPath}`)
+      if (res.status == 200) {
+        var locations = await res.json()
+        var mapData = this.localMapViewData
+        if (mapData) {
+          mapData.pois = []
+          if (Array.isArray(locations)) {
+            locations.forEach(({coordinate}) => {
+              if (coordinate.length == 3) {
+                mapData.pois.push(new Place(coordinate[0], coordinate[1], coordinate[2]))
+              }
+            })
+          } else {
+            var coordinate = locations.coordinate
+            if (coordinate.length == 3) {
+              mapData.pois.push(new Place(coordinate[0], coordinate[1], coordinate[2]))
+            }
           }
-        })
-        EventBus.$emit('mapViewDataChanged', mapData)
+          EventBus.$emit('mapViewDataChanged', mapData)
+        }
       }
-    }, 1000)
+    }, 2000)
 
     // setTimeout(() => clearInterval(this.timer), 30000)
   }
@@ -86,11 +89,14 @@ class VehicleLocationPlugin {
       EventBus.$emit('setInputPlace', {
         pickPlaceIndex: 0,
         place: new Place(
-          -121.883844,
-          37.354559,
-          'San Jose, CA, USA',
+          -121.888771,
+          37.329079,
+          'San Jose McEnery Convention Center',
         )
       })
+    }
+    if (!mapViewData.routes.length) {
+      this.routeKeyPath = ''
     }
   }
 
@@ -105,6 +111,7 @@ class VehicleLocationPlugin {
         duration: route.summary.duration,
         coordinates: route.geometry.coordinates,
       }
+      this.routeKeyPath = `/${taxiRoute.timestamp}`
       await fetch('http://localhost:8081/taxiroute.TaxiRoute/CreateTaxi', {
         method: 'POST',
         headers: {
@@ -113,6 +120,8 @@ class VehicleLocationPlugin {
         },
         body: JSON.stringify(taxiRoute),
       })
+    } else {
+      this.routeKeyPath = ''
     }
   }
 
