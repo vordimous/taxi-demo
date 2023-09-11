@@ -25,6 +25,7 @@ yarn-error.log*
 !/src/plugins/plugin-example/
 
 # Built web app #
+static
 !/static/css/.gitkeep
 !/static/fonts/.gitkeep
 !/static/img/.gitkeep
