@@ -15,48 +15,14 @@ const filters = [
     required: true,
     type: constants.filterTypes.string,
     enum: [
-      'driving-car',
-      'driving-hgv',
-      'cycling-regular',
-      'cycling-road',
-      'cycling-safe',
-      'cycling-mountain',
-      'cycling-electric',
-      'foot-walking',
-      'foot-hiking',
-      'wheelchair'
+      'driving-car'
     ],
     mapping: {
-      'cycling-regular': {
-        slug: 'cycling-regular',
-        icon: 'directions_bike',
-        nestedProfiles: ['cycling-regular', 'cycling-road', 'cycling-electric', 'cycling-mountain'],
-        supportsTrailDifficulty: true
-      },
-      'foot-walking': {
-        slug: 'foot-walking',
-        icon: 'directions_walk',
-        nestedProfiles: ['foot-walking', 'foot-hiking'],
-        supportsTrailDifficulty: true,
-        supportsGreen: true,
-        supportsNoise: true
-      },
       'driving-car': {
         slug: 'driving-car',
         icon: 'directions_car',
         supportsRoadAccessRestrictions: true,
         supportsTollways: true
-      },
-      'driving-hgv': {
-        slug: 'driving-hgv',
-        icon: 'directions_bus',
-        vehicleTypes: ['bus', 'hgv', 'agricultural', 'delivery', 'forestry', 'goods'],
-        supportsRoadAccessRestrictions: true,
-        supportsTollways: true
-      },
-      wheelchair: {
-        slug: 'wheelchair',
-        icon: 'accessible'
       }
     }
   },

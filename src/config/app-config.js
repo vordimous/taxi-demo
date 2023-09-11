@@ -52,7 +52,7 @@ const appConfig = {
   supportsSearchBottomCarousel: false, // If the bottom carousel with the search results must be displayed or not.
   supportsSearchMode: false, // If the search mode is supported
   supportsMyLocationBtn: false, // If the `my location` button is supported on the map view
-  initialZoomLevel: 6, // The initial map view zoom level
+  initialZoomLevel: 15, // The initial map view zoom level
   initialMapMaxZoom: 18, // The initial map view max zoom
 
 

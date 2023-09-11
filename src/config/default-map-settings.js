@@ -25,14 +25,14 @@ const defaultMapSettings = {
   customTileProviderUrl: '',
   customOverlayerTileProviderUrl: '',
   prioritizeSearchingForNearbyPlaces: true,
-  defaultProfile: 'cycling-regular',
+  defaultProfile: 'driving-car',
   compressDataUrlSegment: true,
   autoFitHighlightedBounds: true,
   convertStopAfterRouteEndingToDestination: false,
   useStopOptimization: false,
   accessibleModeActive: false,
   shownOnceTooltips: {},
-  mapCenter: {lat: 49.510944, lng: 8.76709}, // Default center is at Heidelberg, Germany
+  mapCenter: {lat: 37.33017413004349, lng: -121.88974857330324}, // Convention Center, San Jose, CA, USA
   defaultIsochroneColors: [  // qgis plugin color scheme as default
     '#2b83ba',
     '#64abb0',
