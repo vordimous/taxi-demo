@@ -4,11 +4,11 @@
 // You can change the value of a property (using a supported value), but you shouldn't remove a property
 /* eslint-disable no-undef */
 const appConfig = {
-  appName: 'Openrouteservice Maps', // The App name that is used as title for the logo
   footerAppName: 'openrouteservice', // The App name that appears on the bottom
+  appName: 'Zilla Taxi Demo', // The App name that is used as title for the logo
   favIcon: '@/assets/img/favicon.ico', // The favicon used in the browser tab
-  logoImgSrc: '@/assets/img/logo.png', // The logo used in the top-right corner of the sidebar and on the header menu
-  brandLogoSrc: '@/assets/img/heigit-and-hd-uni.png', // used for 'About' page and map overlay on large screens
+  logoImgSrc: '@/assets/img/aklivity-logo.png', // The logo used in the top-right corner of the sidebar and on the header menu
+  brandLogoSrc: '@/assets/img/logo-dark.png', // used for 'About' page and map overlay on large screens
   countryIconImgSrc: '@/assets/img/country-icon.png', // used for Place search as icon for country level results
   footerDevelopedByLink: 'https://www.heigit.org/', // The url that is used on the footer developed by link
   urlMode: 'hash', // The url mode for vue router: `hash` or `history`
@@ -32,7 +32,7 @@ const appConfig = {
   showAdminAreaPolygon: true, // show admin area polygon
   showInstructionsTooltipsOnFirstLoad: true, // if the instructions tooltips must be shown on the app first load
   showDefaultAboutContent: true, // show default about content
-  showAltitudeOnSidebar: true, // show altitude preview on sidebar
+  showAltitudeOnSidebar: false, // show altitude preview on sidebar
 
   autoSelectFirstExactAddressMatchOnSearchEnter: true, // If the first exact address match must be auto selected when the user type a text and in the place search and hit enter/return
 

@@ -10,6 +10,7 @@
  * It is also possible to emit events using the EventBus. For example:
  * EventBus.$emit('mapViewDataChanged', mapViewDataChanged)
  */
+import Leaflet from 'leaflet'
 import {EventBus} from '@/common/event-bus'
 import Place from '@/models/place'
 import MapViewData from '@/models/map-view-data'
@@ -68,17 +69,6 @@ class VehicleLocationPlugin {
     console.log('VehicleLocationPlugin: mapReady callback', context)
   }
 
-  /**
-   * Method to get the current mapViewData and potentially
-   * change it. As it is an object, when you change it you are
-   * changing the original object.
-   * The MapView is watching to changes to this object and
-   * will re-render the displayed content on the map view
-   * when it is changed.
-   * IMPORTANT: this method is expected to be called on
-   * hooks.js on the mapViewDataChanged hook.
-   * @param {*} mapViewData
-   */
   mapViewDataChanged (mapViewData) {
     console.log('VehicleLocationPlugin: mapViewDataChanged callback', mapViewData)
     // change the mapViewData object
@@ -123,6 +113,28 @@ class VehicleLocationPlugin {
     } else {
       this.routeKeyPath = ''
     }
+  }
+
+  markersCreated(markers) {
+    // Code example for customizing icons using material design icons https://material.io/resources/icons/
+    let markerIcoStyle =
+      'transform: rotate(+45deg); margin-left: 4px;margin-top: 2px;'
+
+    for (let key in markers) {
+      let markerColor = '#0d9b76' // maybe change the color based on the place properties ?
+      let iconDivMarkerStyle = `width: 30px;height: 30px;border-radius: 50% 50% 50% 0;background: ${markerColor};position: absolute;transform: rotate(-45deg);left: 50%;top: 50%;margin: -15px 0 0 -15px;`
+      let markerIcon = 'local_taxi' // maybe change the icon based on the place properties ?
+
+      if (markers[key].place.isPoi) {
+        markers[key].icon = Leaflet.divIcon({
+          className: 'custom-div-icon',
+          html: `<div style='${iconDivMarkerStyle}'><i style='${markerIcoStyle}' class='material-icons'>${markerIcon}</i></div>`,
+          iconSize: [30, 42],
+          iconAnchor: [15, 42],
+        })
+      }
+    }
+    return markers
   }
 
 }
