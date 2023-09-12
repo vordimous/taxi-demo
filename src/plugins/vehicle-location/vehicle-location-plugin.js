@@ -136,12 +136,16 @@ class VehicleLocationPlugin {
     for (let key in markers) {
       let markerColor = '#0d9b76' // maybe change the color based on the place properties ?
       let markerIcon = 'local_taxi' // maybe change the icon based on the place properties ?
-      if (key == 0) {
-        markerColor = 'green'
-        markerIcon = 'location_on' // ma
-      } else if (key == markers.length - 1) {
-        markerColor = 'red'
-        markerIcon = 'pin_drop' // ma
+
+      if (this.localMapViewData.routes.length > 0 ) {
+        if (key == 0) {
+          markerColor = 'green'
+          markerIcon = 'location_on' // ma
+        } else if (key == markers.length - 1) {
+          markerColor = 'red'
+          markerIcon = 'pin_drop' // ma
+        }
+
       }
 
       let iconDivMarkerStyle = `color: white; width: 30px; height: 30px;border-radius: 50% 50% 50% 0;background: ${markerColor};position: absolute;transform: rotate(-45deg);left: 50%;top: 50%;margin: -15px 0 0 -15px;`
