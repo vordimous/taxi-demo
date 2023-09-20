@@ -376,7 +376,7 @@ class VehicleLocationPlugin {
     if (mapViewData.routes.length) {
       var route = mapViewData.routes[0]
       var taxiRoute = {
-        timestamp: mapViewData.timestamp,
+        key: encodeURIComponent(`${mapViewData.places[mapViewData.places.length - 1].placeName}-${mapViewData.timestamp}`).replace('%20','_'),
         bbox: route.bbox,
         distance: route.summary.distance,
         duration: route.summary.duration,
@@ -386,12 +386,12 @@ class VehicleLocationPlugin {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Idempotency-Key': `${taxiRoute.timestamp}`,
+          'Idempotency-Key': `${taxiRoute.key}`,
         },
         body: JSON.stringify(taxiRoute),
       })
       if (res.status == 200) {
-        this.routeKeyPath = `/${taxiRoute.timestamp}`
+        this.routeKeyPath = `/${taxiRoute.key}`
       }
     } else {
       this.routeKeyPath = ''
