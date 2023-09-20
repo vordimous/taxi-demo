@@ -17,7 +17,7 @@ import {EventBus} from '@/common/event-bus'
 import Place from '@/models/place'
 import MapViewData from '@/models/map-view-data'
 
-const barData = [
+const barDataOld = [
   {
     'id': 'a4a4615da5a7ee532b7583b5aea93a6b',
     'name': 'Haberdasher',
@@ -127,6 +127,169 @@ const barData = [
   //   'lat': 37.336556
   // }
 ]
+const barData = [
+  {
+    'location': {
+      'x': -121.886548,
+      'y': 37.329916
+    },
+    'name': 'Haberdasher'
+  },
+  {
+    'location': {
+      'x': -121.886489,
+      'y': 37.33015
+    },
+    'name': 'The Fountainhead Bar'
+  },
+  {
+    'location': {
+      'x': -121.886583,
+      'y': 37.33057
+    },
+    'name': 'The Continental Bar Lounge & Patio'
+  },
+  {
+    'location': {
+      'x': -121.8858,
+      'y': 37.329313
+    },
+    'name': 'Uproar Brewing Company'
+  },
+  {
+    'location': {
+      'x': -121.892301,
+      'y': 37.333053
+    },
+    'name': 'Caravan Lounge'
+  },
+  {
+    'location': {
+      'x': -121.88997,
+      'y': 37.334991
+    },
+    'name': 'Skewers & Brew'
+  },
+  {
+    'location': {
+      'x': -121.889403,
+      'y': 37.335097
+    },
+    'name': 'Paper Plane'
+  },
+  {
+    'location': {
+      'x': -121.890903,
+      'y': 37.335023
+    },
+    'name': 'Splash Video Dance Bar'
+  },
+  {
+    'location': {
+      'x': -121.890482,
+      'y': 37.335185
+    },
+    'name': 'Mac\'s Club'
+  },
+  {
+    'location': {
+      'x': -121.89362,
+      'y': 37.334962
+    },
+    'name': 'Five Points'
+  },
+  {
+    'location': {
+      'x': -121.889894,
+      'y': 37.336244
+    },
+    'name': 'Fox Tale Fermentation Project'
+  },
+  {
+    'location': {
+      'x': -121.893356,
+      'y': 37.335375
+    },
+    'name': 'Olla'
+  },
+  {
+    'location': {
+      'x': -121.893436,
+      'y': 37.335533
+    },
+    'name': 'O\'Flaherty\'s Irish Pub'
+  },
+  {
+    'location': {
+      'x': -121.889293,
+      'y': 37.337041
+    },
+    'name': 'ISO Beers'
+  },
+  {
+    'location': {
+      'x': -121.894111,
+      'y': 37.336109
+    },
+    'name': 'District San Jose'
+  },
+  {
+    'location': {
+      'x': -121.888879,
+      'y': 37.337333
+    },
+    'name': '3rd & Bourbon'
+  },
+  {
+    'location': {
+      'x': -121.894348,
+      'y': 37.336519
+    },
+    'name': 'San Pedro Square Market'
+  },
+  {
+    'location': {
+      'x': -121.894278,
+      'y': 37.336556
+    },
+    'name': 'San Pedro Square Market Bar'
+  },
+  {
+    'location': {
+      'x': -121.897993,
+      'y': 37.335078
+    },
+    'name': 'Enoteca La Storia'
+  },
+  {
+    'location': {
+      'x': -121.90081,
+      'y': 37.332876
+    },
+    'name': 'BMW Lounge'
+  },
+  {
+    'location': {
+      'x': -121.893671,
+      'y': 37.339914
+    },
+    'name': 'Teske\'s Germania'
+  },
+  {
+    'location': {
+      'x': -121.892833,
+      'y': 37.340302
+    },
+    'name': 'Devine Cheese And Wine'
+  },
+  {
+    'location': {
+      'x': -121.905419,
+      'y': 37.332056
+    },
+    'name': 'True Brew San Jose'
+  }
+]
 
 const Button = Vue.extend(VBtn)
 const Input = Vue.extend(VInput)
@@ -144,7 +307,7 @@ class VehicleLocationPlugin {
     this.timer = null
     this.localMapViewData = new MapViewData()
     this.routeKeyPath = ''
-    this.barPlaces = barData.map((b) => (new Place(b.lng, b.lat, b.name, {placeId: b.id, isPoi: true})))
+    this.barPlaces = barData.map((b) => (new Place(b.location.x, b.location.y, b.name, { isPoi: true })))
   }
 
   appLoaded(vueInstance) {
@@ -158,13 +321,16 @@ class VehicleLocationPlugin {
           var mapData = this.localMapViewData
           if (mapData) {
             if (Array.isArray(locations)) {
-              mapData.pois = this.barPlaces
+              mapData.places = []
+              if(mapData.pois.length == 0) mapData.pois = this.barPlaces
+
               locations.forEach(({key, coordinate}) => {
                 if (coordinate[coordinate.length - 1] != -1) {
                   mapData.places.push(new Place(coordinate[0], coordinate[1], key))
                 }
               })
             } else {
+              mapData.pois = []
               var coordinate = locations.coordinate
               if (coordinate[coordinate.length - 1] != -1 && mapData.places.length >= 2) {
                 mapData.places = [
@@ -199,7 +365,6 @@ class VehicleLocationPlugin {
   }
 
   mapViewDataChanged (mapViewData) {
-    console.log('VehicleLocationPlugin: mapViewDataChanged callback', mapViewData)
     this.localMapViewData = mapViewData.clone()
     if (!mapViewData.routes.length) {
       this.routeKeyPath = ''
