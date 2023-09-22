@@ -17,116 +17,6 @@ import {EventBus} from '@/common/event-bus'
 import Place from '@/models/place'
 import MapViewData from '@/models/map-view-data'
 
-const barDataOld = [
-  {
-    'id': 'a4a4615da5a7ee532b7583b5aea93a6b',
-    'name': 'Haberdasher',
-    'lng': -121.886548,
-    'lat': 37.329916
-  },
-  // {
-  //   'id': 'cb0fa663c2a10d13841f1c9aa03ccabe',
-  //   'name': 'The Fountainhead Bar',
-  //   'lng': -121.886489,
-  //   'lat': 37.33015
-  // },
-  {
-    'id': 'fb52167a1c9b58ab32e2d5541af6984a',
-    'name': 'The Continental Bar Lounge & Patio',
-    'lng': -121.886583,
-    'lat': 37.33057
-  },
-  {
-    'id': 'b5c513b0bb04eb821615c056946e3653',
-    'name': 'Uproar Brewing Company',
-    'lng': -121.8858,
-    'lat': 37.329313
-  },
-  {
-    'id': '9ae7cfe51a03e238ecc8c13082d7ae90',
-    'name': 'Caravan Lounge',
-    'lng': -121.892301,
-    'lat': 37.333053
-  },
-  // {
-  //   'id': '041a8c06998540fb64c4f4e1374b568f',
-  //   'name': 'Skewers & Brew',
-  //   'lng': -121.88997,
-  //   'lat': 37.334991
-  // },
-  {
-    'id': '629da9d1f51913a729940e1fea2cbbf0',
-    'name': 'Paper Plane',
-    'lng': -121.889403,
-    'lat': 37.335097
-  },
-  // {
-  //   'id': 'e172ca007ed02005f921ea22fbac842b',
-  //   'name': 'Splash Video Dance Bar',
-  //   'lng': -121.890903,
-  //   'lat': 37.335023
-  // },
-  // {
-  //   'id': 'ef70322aead58ce9564533453dbce31d',
-  //   'name': 'Mac\'s Club',
-  //   'lng': -121.890482,
-  //   'lat': 37.335185
-  // },
-  // {
-  //   'id': '79f533eacc9f6bb540b0fbc0040044f9',
-  //   'name': 'Five Points',
-  //   'lng': -121.89362,
-  //   'lat': 37.334962
-  // },
-  {
-    'id': 'a24d6adeebd22305b15af51e8d7cf18a',
-    'name': 'Fox Tale Fermentation Project',
-    'lng': -121.889894,
-    'lat': 37.336244
-  },
-  // {
-  //   'id': '8dd48db006a4574b07bbbed394d82c37',
-  //   'name': 'Olla',
-  //   'lng': -121.893356,
-  //   'lat': 37.335375
-  // },
-  {
-    'id': '0cfbad103ef56c846f60f3de5f2fe39c',
-    'name': 'O\'Flaherty\'s Irish Pub',
-    'lng': -121.893436,
-    'lat': 37.335533
-  },
-  // {
-  //   'id': 'd31be4b2ab376b3ac9f08d97f5f18046',
-  //   'name': 'ISO Beers',
-  //   'lng': -121.889293,
-  //   'lat': 37.337041
-  // },
-  // {
-  //   'id': '3de0fb2ff9ebb0761702fa292b2bc218',
-  //   'name': 'District San Jose',
-  //   'lng': -121.894111,
-  //   'lat': 37.336109
-  // },
-  // {
-  //   'id': '5c0e74e3abec46cf00f1b6b467e83b4d',
-  //   'name': '3rd & Bourbon',
-  //   'lng': -121.888879,
-  //   'lat': 37.337333
-  // },
-  // {
-  //   'id': '759f360ce779cb0f71eaf272179a4c9f',
-  //   'name': 'San Pedro Square Market',
-  //   'lng': -121.894348,
-  //   'lat': 37.336519
-  // },
-  // {
-  //   'id': 'd67a9dbaf1fbd8fc45ac96e649a4c787',
-  //   'name': 'San Pedro Square Market Bar',
-  //   'lng': -121.894278,
-  //   'lat': 37.336556
-  // }
-]
 const barData = [
   {
     'location': {
@@ -293,6 +183,7 @@ const barData = [
 
 const Button = Vue.extend(VBtn)
 const Input = Vue.extend(VInput)
+const yesterday = new Date(new Date().setDate(new Date().getDate()-1)).valueOf()
 
 class VehicleLocationPlugin {
   /**
@@ -324,9 +215,9 @@ class VehicleLocationPlugin {
               mapData.places = []
               if(mapData.pois.length == 0) mapData.pois = this.barPlaces
 
-              locations.forEach(({key, coordinate}) => {
+              locations.forEach(({key, coordinate, icon}) => {
                 if (coordinate[coordinate.length - 1] != -1) {
-                  mapData.places.push(new Place(coordinate[0], coordinate[1], key))
+                  mapData.places.push(new Place(coordinate[0], coordinate[1], key, { icon }))
                 }
               })
             } else {
@@ -375,13 +266,15 @@ class VehicleLocationPlugin {
     console.log('VehicleLocationPlugin: afterBuildDirectionsMapViewData callback', mapViewData)
     if (mapViewData.routes.length) {
       var route = mapViewData.routes[0]
+      var safeName = encodeURIComponent(mapViewData.places[mapViewData.places.length - 1].placeName).replaceAll('%20','_').substring(0,13)
       var taxiRoute = {
-        key: encodeURIComponent(`${mapViewData.places[mapViewData.places.length - 1].placeName}-${mapViewData.timestamp}`).replace('%20','_'),
+        key: `${safeName}-${mapViewData.timestamp - yesterday}`,
         bbox: route.bbox,
         distance: route.summary.distance,
         duration: route.summary.duration,
         coordinates: route.geometry.coordinates,
       }
+      console.log(taxiRoute.key.length)
       var res = await fetch(this.taxiRouteAPI, {
         method: 'POST',
         headers: {
@@ -484,7 +377,7 @@ class VehicleLocationPlugin {
       let iconDivMarkerStyle = `color: white; width: 30px; height: 30px;border-radius: 50% 50% 50% 0;background: ${markerColor};position: absolute;transform: rotate(-45deg);left: 50%;top: 50%;margin: -15px 0 0 -15px;`
       markers[key].icon = Leaflet.divIcon({
         className: 'custom-div-icon',
-        html: `<div style='${iconDivMarkerStyle}'><i style='${markerIcoStyle}' class='material-icons'>${markerIcon}</i></div>`,
+        html: `<div style='${iconDivMarkerStyle}'><i style='${markerIcoStyle}' class='material-icons'>${markers[key].place.icon || markerIcon}</i></div>`,
         iconSize: [30, 42],
         iconAnchor: [15, 42],
       })

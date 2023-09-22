@@ -39,6 +39,8 @@ class Place {
     // If it is a POI
     this.isPoi = options.isPoi
 
+    this.icon = options.icon
+
     if (this.lng !== null && this.lat !== null) {
       this.coordinates = [this.lng, this.lat]
 
@@ -143,7 +145,8 @@ class Place {
       'properties',
       'placeId',
       'direct',
-      'isPoi'
+      'isPoi',
+      'icon'
     ]
 
     for (const key in propertiesToClone) {
